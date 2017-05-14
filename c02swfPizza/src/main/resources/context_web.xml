@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:flow="http://www.springframework.org/schema/webflow-config"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.4.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<mvc:annotation-driven />
+	<context:component-scan base-package="andrew.mvc" />
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order" value="1" />
+	</bean>
+	
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename">
+			<value>/WEB-INF/i18n/messages</value>
+		</property>
+		<property name="cacheSeconds">
+			<value>10</value>
+		</property>
+	</bean>
+	
+	<!-- 
+	这个会影响workflow的view
+	<mvc:default-servlet-handler />
+ 	-->
+	<!-- Executes flows: the entry point into the Spring Web Flow system -->
+	<flow:flow-executor id="flowExecutor" />
+
+	<!-- The registry of executable flow definitions -->
+	<flow:flow-registry id="flowRegistry" base-path="/WEB-INF/flows">
+		<flow:flow-location-pattern value="/**/*-flow.xml" />
+	</flow:flow-registry>
+
+	<!--Maps request paths to flows in the flowRegistry -->
+	<bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+		<property name="flowRegistry" ref="flowRegistry" />
+	</bean>
+
+	<!-- Dispatches requests mapped to flows to FlowHandler implementations -->
+	<bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
+		<property name="flowExecutor" ref="flowExecutor" />
+	</bean>
+
+</beans>

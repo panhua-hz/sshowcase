@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
+	start-state="start">
+
+	<var name="order" class="andrew.pizza.domain.Order" />
+
+	<view-state id="start" view="welcome.jsp">
+		<transition on="phoneEntered" to="lookupCustomer" />
+		<transition on="cancel" to="endState" />
+	</view-state>
+
+	<action-state id="lookupCustomer">
+		<evaluate result="order.customer" result-type="andrew.pizza.domain.Customer"
+			expression="pizzaAction.lookupCustomer(requestParameters.phoneNumber)" />
+		<transition to="registrationForm"
+			on-exception="andrew.pizza.domain.CustomerNotFoundException" />
+		<transition to="showOrder" />
+	</action-state>
+
+	<view-state id="registrationForm" model="order" popup="true">
+		<transition on="submit" to="addCustomer" />
+		<transition on="cancel" to="endState" />
+	</view-state>
+
+	<action-state id="addCustomer">
+		<evaluate expression="pizzaAction.addCustomer(order.customer)" />
+		<transition to="showOrder" />
+	</action-state>
+
+	<!-- Order -->
+	<view-state id="showOrder">
+		<transition on="createPizza" to="createPizza" />
+		<transition on="checkout" to="takePayment" />
+		<transition on="cancel" to="endState" />
+	</view-state>
+
+	<view-state id="createPizza" model="flowScope.pizza">
+		<on-entry>
+			<set name="flowScope.pizza" value="new andrew.pizza.domain.Pizza()" />
+			<evaluate result="viewScope.toppingsList"
+				expression="T(andrew.pizza.domain.PizzaTopping).asList()" />
+		</on-entry>
+		<transition on="addPizza" to="showOrder">
+			<evaluate expression="order.addPizza(flowScope.pizza)" />
+		</transition>
+		<transition on="cancel" to="showOrder" />
+	</view-state>
+
+	<!-- Payment-->
+	<view-state id="takePayment" model="flowScope.payment">
+		<on-entry>
+			<set name="flowScope.payment" value="new andrew.pizza.domain.Payment()" />
+			<evaluate result="viewScope.paymentTypeList" expression="T(andrew.pizza.domain.PaymentType).asList()" />
+		</on-entry>
+		<transition on="paymentSubmitted" to="verifyPayment" />
+		<transition on="cancel" to="endState" />
+	</view-state>
+
+	<action-state id="verifyPayment">
+		<evaluate result="order.payment" expression="flowScope.payment" />
+		<transition to="saveOrder" />
+	</action-state>
+
+	<action-state id="saveOrder">
+		<evaluate expression="pizzaAction.saveOrder(order)" />
+		<transition to="thankYou" />
+	</action-state>
+
+	<view-state id="thankYou">
+		<transition to="endState" />
+	</view-state>
+
+	<!-- End state -->
+	<end-state id="endState" />
+</flow>
