@@ -1,8 +1,6 @@
 package services.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -70,9 +68,10 @@ public class NoteServiceJpa implements NoteService {
 
 	@Override
 	public List<String> findAvaTags() {
-		List<String> tagStrList = new ArrayList<>();
 		List<EntTag> tagList = findAllTags();
-		tagList.forEach(item->tagStrList.add(item.getTagName()));
+		String[] tagStrArr = new String[tagList.size()];
+		Arrays.parallelSetAll(tagStrArr, i->tagList.get(i).getTagName());
+		List<String> tagStrList = Arrays.asList(tagStrArr);
 		return tagStrList;
 	}
 
@@ -108,9 +107,10 @@ public class NoteServiceJpa implements NoteService {
 	@Override
 	public List<NoteShow> noteByUsername(String username) {
 		List<EntNote> notesE = findByUsername(username);
-		List<NoteShow> noteS = new ArrayList<>();
-		notesE.forEach(item->noteS.add(new NoteShow(item)));
-		return noteS;
+		NoteShow[] notesArr = new NoteShow[notesE.size()];
+		Arrays.parallelSetAll(notesArr, i->new NoteShow(notesE.get(i)));
+		List<NoteShow> noteshowList = Arrays.asList(notesArr);
+		return noteshowList;
 	}
 
 }

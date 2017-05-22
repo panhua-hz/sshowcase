@@ -1,18 +1,11 @@
 package config;
 
-import javax.servlet.Filter;
-
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class InitMvcWeb extends AbstractAnnotationConfigDispatcherServletInitializer {
-	public static final String CHAR_ENCODING = "UTF-8";
-	//private static final Logger logger = LoggerFactory.getLogger(InitMvcWeb.class);
-
 	@Override
 	protected Class<?>[] getRootConfigClasses() {
 		return new Class<?>[] {ConfigCtxRoot.class, ConfigCtxSecurity.class};
-		//return new Class<?>[] {ConfigCtxRoot.class};
 	}
 
 	@Override
