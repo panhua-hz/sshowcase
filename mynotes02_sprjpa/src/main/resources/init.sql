@@ -14,7 +14,9 @@ create table note(
 
 create table tags(
 	id integer identity primary key,
-	tag_name varchar(100)
+	tag_name varchar(100),
+	created_at timestamp,
+	created_by varchar(50)
 );
 
 insert into tags(tag_name) values('消费');

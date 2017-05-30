@@ -1,19 +1,16 @@
 package domain;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.directory.api.util.Strings;
 
 @Entity
 @Table(name="tags")
@@ -23,6 +20,10 @@ public final class EntTag {
 	private Long id;
 	@Column(name="tag_name")
 	private String tagName;
+	@Column(name="created_at")
+	private Date createdAT;
+	@Column(name="created_by")
+	private String createdBy;
 	
 	public EntTag() {
 	}
@@ -30,19 +31,40 @@ public final class EntTag {
 		this.tagName = tagName;
 	}
 	public EntTag(Long id, String tagName) {
-		super();
 		this.id = id;
 		this.tagName = tagName;
-		//this.parentId = parentId;
+	}
+	public EntTag(String tagName, Date createdAT, String createdBy) {
+		this.tagName = tagName;
+		this.createdAT = createdAT;
+		this.createdBy = createdBy;
+	}
+	public EntTag(Long id, String tagName, Date createdAT, String createdBy) {
+		this.id = id;
+		this.tagName = tagName;
+		this.createdAT = createdAT;
+		this.createdBy = createdBy;
 	}
 	@Override
 	public boolean equals(Object that) {
-		return EqualsBuilder.reflectionEquals(this, that, "id");
+		if (this == that)
+			return true;
+		if (that == null)
+			return false;
+		if (this.hashCode() != that.hashCode()){
+			return false;
+		}
+		if ((that instanceof EntTag)){
+			EntTag other = (EntTag)that;
+			return Objects.equals(this.tagName, other.tagName);
+		}else{
+			return false;
+		}
 	}
 
 	@Override
 	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this, "id");
+		return Objects.hashCode(tagName);
 	}
 	@Override
 	public String toString() {
@@ -61,4 +83,18 @@ public final class EntTag {
 	public void setTagName(String tagName) {
 		this.tagName = tagName;
 	}
+	public Date getCreatedAT() {
+		return createdAT;
+	}
+	public void setCreatedAT(Date createdAT) {
+		this.createdAT = createdAT;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	
+	
 }

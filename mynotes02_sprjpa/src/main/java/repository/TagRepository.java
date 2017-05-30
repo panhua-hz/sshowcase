@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 
 import domain.EntTag;
 
-public interface TagRepository extends JpaRepository<EntTag, Long>{
+public interface TagRepository extends JpaRepository<EntTag, Long>, TagMoreRep{
 	EntTag findByTagName(String tagName);
 	
 	@Query("select tags from EntTag tags where id in (:tagids)")
 	List<EntTag> findByTagIds(@Param("tagids") Long[] tagids);
+	
+	@Query("select tags from EntTag tags where tagName in (:tagNames)")
+	List<EntTag> findByTagNames(@Param("tagNames") String[] tagNames);
 }

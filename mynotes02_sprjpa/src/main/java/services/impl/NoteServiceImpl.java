@@ -44,17 +44,19 @@ public class NoteServiceImpl implements NoteService {
 		
 		if (note.getAddTags() != null){
 			String[] addTagArr = note.getAddTags().split(";");
-			Stream<EntTag> addTagStream = Stream.of(addTagArr).filter(item->item!=null&&item.trim().length()>0)
-					.map(EntTag::new)
-					.peek(item->logger.info(item.toString()))
-					.map(item->{
-						EntTag fTag = tagRepository.findByTagName(item.getTagName());
-						if (fTag != null){
-							return fTag;
-						}else{
-							return tagRepository.save(item);
-						}});
-			addTagStream.forEach(item->noteTags.add(item));
+//			Stream<EntTag> addTagStream = Stream.of(addTagArr).filter(item->item!=null&&item.trim().length()>0)
+//					.map(EntTag::new)
+//					.peek(item->logger.info(item.toString()))
+//					.map(item->{
+//						EntTag fTag = tagRepository.findByTagName(item.getTagName());
+//						if (fTag != null){
+//							return fTag;
+//						}else{
+//							return tagRepository.save(item);
+//						}});
+//			addTagStream.forEach(item->noteTags.add(item));
+			
+			noteTags.addAll(tagRepository.saveTags(addTagArr, note.getUsername()));
 		}
 		EntNote addNote = new EntNote(note.getUsername(), note.getMessage(), new Date(), 0.0, 0.0, noteTags);
 		noteRepository.save(addNote);
